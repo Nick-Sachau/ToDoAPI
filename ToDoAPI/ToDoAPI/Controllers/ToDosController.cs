@@ -28,14 +28,38 @@ namespace ToDoAPI.Controllers
         [HttpGet]
         public async Task<ActionResult<IEnumerable<ToDo>>> GetToDos()
         {
-            return await _context.ToDos.ToListAsync();
+            var toDo = await _context.ToDos.Include("Category").Select(x => new ToDo()
+            {
+                ToDoId = x.ToDoId,
+                Name = x.Name,
+                Done = x.Done,
+                Category = x.Category != null ? new Category()
+                {
+                    CategoryId = x.Category.CategoryId,
+                    CatName = x.Category.CatName,
+                    CatDesc = x.Category.CatDesc
+                } : null
+            }).ToListAsync();
+
+            return Ok(toDo);
         }
 
         // GET: api/ToDos/5
         [HttpGet("{id}")]
         public async Task<ActionResult<ToDo>> GetToDo(int id)
         {
-            var toDo = await _context.ToDos.FindAsync(id);
+            var toDo = await _context.ToDos.Where(x => x.ToDoId == id).Select(x => new ToDo()
+            {
+                ToDoId = x.ToDoId,
+                Name = x.Name,
+                Done = x.Done,
+                Category = x.Category != null ? new Category()
+                {
+                    CategoryId = x.Category.CategoryId,
+                    CatName = x.Category.CatName,
+                    CatDesc = x.Category.CatDesc
+                } : null
+            }).FirstOrDefaultAsync();
 
             if (toDo == null)
             {
@@ -81,10 +105,17 @@ namespace ToDoAPI.Controllers
         [HttpPost]
         public async Task<ActionResult<ToDo>> PostToDo(ToDo toDo)
         {
-            _context.ToDos.Add(toDo);
+            ToDo newTodo = new ToDo()
+            {
+                Name = toDo.Name,
+                Done = toDo.Done,
+                CategoryId = toDo.CategoryId
+            };
+
+            _context.ToDos.Add(newTodo);
             await _context.SaveChangesAsync();
 
-            return CreatedAtAction("GetToDo", new { id = toDo.ToDoId }, toDo);
+            return Ok(newTodo);
         }
 
         // DELETE: api/ToDos/5
