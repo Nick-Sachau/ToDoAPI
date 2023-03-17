@@ -33,6 +33,7 @@ namespace ToDoAPI.Controllers
                 ToDoId = x.ToDoId,
                 Name = x.Name,
                 Done = x.Done,
+                Description = x.Description,
                 Category = x.Category != null ? new Category()
                 {
                     CategoryId = x.Category.CategoryId,
@@ -53,6 +54,7 @@ namespace ToDoAPI.Controllers
                 ToDoId = x.ToDoId,
                 Name = x.Name,
                 Done = x.Done,
+                Description = x.Description,
                 Category = x.Category != null ? new Category()
                 {
                     CategoryId = x.Category.CategoryId,
@@ -109,7 +111,8 @@ namespace ToDoAPI.Controllers
             {
                 Name = toDo.Name,
                 Done = toDo.Done,
-                CategoryId = toDo.CategoryId
+                CategoryId = toDo.CategoryId,
+                Description = toDo.Description
             };
 
             _context.ToDos.Add(newTodo);
